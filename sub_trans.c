@@ -210,7 +210,7 @@ char *alloc_string(const char *string)
 {
 	char *alloc_mem = (char *)malloc(strlen(string) + 1);
 	if (alloc_mem == NULL)
-		die("Allocating memory failed!\n");
+		die("Allocating memory failed!\n", NULL);
 
 	return alloc_mem;
 }
@@ -236,8 +236,7 @@ void push_service(service *ser, services *sers)
 		sers->service[sers->len] = *ser;
 		sers->len++;
 	} else {
-		perror("Arguments are NULL\n");
-		exit(1);
+		die("Arguments are NULL\n", NULL);
 	}
 }
 
@@ -245,7 +244,7 @@ service *initial_ser()
 {
 	service *ser = (service *)malloc(sizeof(service));
 	if (ser == NULL)
-		die("Initial service failed!\n");
+		die("Initial service failed!\n", NULL);
 
 	ser->order = 0;
 	ser->ater_id = 0;
@@ -262,7 +261,7 @@ services *initial_sers()
 {
 	services *sers = (services *)malloc(sizeof(services));
 	if (sers == NULL)
-		die("Initial services failed!\n");
+		die("Initial services failed!\n", NULL);
 	sers->len = 0;
 	return sers; 
 }
