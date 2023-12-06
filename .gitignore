@@ -1,0 +1,8 @@
+*.json
+*~
+
+#demo
+sub_trans
+demo
+demo.c
+subtrans
