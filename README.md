@@ -1,4 +1,4 @@
-## Subscibe transform for v2ray
+## Subscribe transform for v2ray
 This is simple program that can transform the subscribe for the v2ray proxy.
 ## Usage:
 ``` bash
