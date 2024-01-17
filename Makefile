@@ -1,8 +1,8 @@
-CFLAGS = -Wall -Wextra -pedantic -std=c99 -02
+CFLAGS = -Wall -Wextra -pedantic -std=c99 -02 -g
 LDFLAGS = -ljson-c
-CC = gcc
+CC = gcc -g
 
-subtrans: sub_trans.c
+subtrans: main.c
 	$(CC) $^ $(LDFLAGS) -o $@
 %.o:%.c
 	$(CC) $^ $(CFLAGS) -o $@

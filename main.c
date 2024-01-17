@@ -43,7 +43,7 @@ void die(char *info, const char *error)
 {
 	if (info != NULL) {
 		if (error != NULL) {
-			fprintf(stderr, info, error);
+		fprintf(stderr, info, error);
 			exit(1);
 		} else {
 			fprintf(stderr, info);
@@ -110,7 +110,7 @@ void produce_config(unsigned int selection) {
 
 	/* printf("pretty print result:\n %s\n", json_object_to_json_string_ext(root, JSON_C_TO_STRING_PRETTY)); */
 	/* save to file */
-	if (json_object_to_file("config.json", root)) {
+	if (json_object_to_file(json_target, root)) {
 		free_services(sers);	
 		json_object_put(root);
 		die("save to file failed!\n", NULL);		
