@@ -6,6 +6,7 @@
 #define MAX_LEN 120
 #define BUFFER_SIZE 512
 #define DEFAULT_VALUE 1
+#define USAGE "usage:\n    -p=source.json\n    -s=[order config.json]\n"
 
 typedef struct {
 	unsigned order;
@@ -38,6 +39,12 @@ void print_all_services();
 void produce_config(unsigned int selection);
 services *get_sers();
 void die(char *info, const char *error);
+void help();
+
+void help()
+{
+	printf(USAGE);
+}
 
 void die(char *info, const char *error)
 {
@@ -77,9 +84,6 @@ void produce_config(unsigned int selection) {
 	json_object_object_get_ex(root, "outbounds", &outbounds);
 	json_error(outbounds);
 
-	json_object_object_get_ex(json_object_array_get_idx(outbounds, 0), "protocol", &protocol);
-	json_error(protocol);
-
 	json_object_object_get_ex(json_object_array_get_idx(outbounds, 0), "settings", &settings);
 	json_error(settings);
 
@@ -92,9 +96,6 @@ void produce_config(unsigned int selection) {
 	json_object_object_get_ex(json_object_array_get_idx(users, 0), "id", &id);
 	json_error(id);
 
-	json_object_object_get_ex(json_object_array_get_idx(users, 0), "aterId", &aterId);
-	json_error(aterId);
-	
 	json_object_object_get_ex(json_object_array_get_idx(vnext, 0), "port", &port);
 	json_error(port);
 
@@ -102,15 +103,12 @@ void produce_config(unsigned int selection) {
 	json_error(address);
 
 	/* editing the config.json object's value */
-	json_object_set_string(protocol, ser.protocol);
 	json_object_set_string(id, ser.id);
-	json_object_set_int(aterId, ser.ater_id);
 	json_object_set_int(port, ser.port);
 	json_object_set_string(address, ser.address);
 
-	/* printf("pretty print result:\n %s\n", json_object_to_json_string_ext(root, JSON_C_TO_STRING_PRETTY)); */
 	/* save to file */
-	if (json_object_to_file(json_target, root)) {
+	if (json_object_to_file_ext(json_target, root, JSON_C_TO_STRING_PRETTY)) {
 		free_services(sers);	
 		json_object_put(root);
 		die("save to file failed!\n", NULL);		
@@ -160,34 +158,28 @@ services *json_convert_to_object(FILE *fp)
 	json_object *root;
 	char chunk[BUFFER_SIZE];
 	int i = 1;
-	json_object *add, *type, *remark, *id, *port, *aid;
+	json_object *add, *remark, *id, *port, *aid;
 	services *sers = initial_sers();
 
 	while (fgets(chunk, sizeof(chunk), fp) != NULL) {
 		
 		service *ser = initial_ser();
 		root = json_tokener_parse(chunk);
-		
 		json_error(root);
+		
 		json_object_object_get_ex(root, "add", &add);
 		json_error(add);
-		json_object_object_get_ex(root, "type", &type);
-		json_error(type);
 		json_object_object_get_ex(root, "remark", &remark);
 		json_error(remark);
 		json_object_object_get_ex(root, "id", &id);
 		json_error(id);		
 		json_object_object_get_ex(root, "port", &port);
-		json_error(port);
+		json_error(id);
 		json_object_object_get_ex(root, "aid", &aid);
 		json_error(aid);
 		
 		ser->order = i;
 		ser->ater_id = json_object_get_int(aid);
-		ser->port = json_object_get_int(port);
-		
-		ser->protocol = alloc_string(json_object_get_string(type));
-		strcpy(ser->protocol, json_object_get_string(type));
 
 		ser->id = alloc_string(json_object_get_string(id));
 		strcpy(ser->id, json_object_get_string(id));
@@ -275,9 +267,14 @@ void json_error(json_object *object)
 
 int main(int argc, char *argv[])
 {
-	if (argc < 3)
-		die("Invalid arguments!\n", NULL);
-	if (!strcmp(argv[1], "-p")) {
+	if (argc < 2) {
+		help();
+		die("Invalid arguments!\n", NULL);		
+	}
+	if (!strcmp(argv[1], "-h")) {
+		help();
+		return 0;
+	} else if (!strcmp(argv[1], "-p")) {
 		json_source = argv[2];
 		print_all_services();
 	} else if (!strcmp(argv[1], "-s")) {
@@ -286,10 +283,10 @@ int main(int argc, char *argv[])
 			json_target = argv[4];
 			produce_config(string_convert_to_int(argv[2]));
 		} else {
-			die("Please input a valid number!\n", NULL);
+			die("Please input a valid number for \"-s\" option!\n", NULL);
 		}
-		
 	} else {
+		help();
 		die("Please giving an option!: [-s, -p]\n", NULL);
 	}
 		
