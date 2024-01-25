@@ -6,6 +6,8 @@ subtrans: main.c
 	$(CC) $^ $(LDFLAGS) -o $@
 %.o:%.c
 	$(CC) $^ $(CFLAGS) -o $@
+install:
+	cp subtrans /usr/local/bin
 .PHONY: clean
 clean:
-	-rm -f subtrans.o
+	-rm -f subtrans.o subtrans
